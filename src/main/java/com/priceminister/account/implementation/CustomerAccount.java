@@ -9,7 +9,10 @@ public class CustomerAccount implements Account {
      */
     private int balance = 0;
 
-    public void add(Double addedAmount) {
+    public void add(Double addedAmount) throws NegativeDepositAmountException {
+        if (addedAmount < 0) {
+            throw new NegativeDepositAmountException();
+        }
         this.balance += toCents(addedAmount);
     }
 
