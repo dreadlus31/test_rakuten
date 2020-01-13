@@ -10,7 +10,7 @@ public class CustomerAccount implements Account {
     private int balance = 0;
 
     public void add(Double addedAmount) {
-        this.balance += new Double(addedAmount * 100).intValue();
+        this.balance += toCents(addedAmount);
     }
 
     public Double getBalance() {
