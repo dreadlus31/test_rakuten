@@ -43,7 +43,7 @@ public class CustomerAccountTest {
      */
     @Test
     public void testAccountWithoutMoneyHasZeroBalance() {
-        assertEquals(customerAccount.getBalance(), new Double(0));
+        assertEquals(new Double(0), customerAccount.getBalance());
     }
 
     /**
@@ -51,9 +51,62 @@ public class CustomerAccountTest {
      */
     @Test
     public void testAddPositiveAmount() {
-        Double randomDeposit = randomDouble();
-        customerAccount.add(randomDeposit);
-        assertEquals(randomDeposit, customerAccount.getBalance());
+        Double randomDeposit = Math.abs(randomDouble());
+        try {
+            customerAccount.add(randomDeposit);
+            assertEquals(randomDeposit, customerAccount.getBalance());
+        } catch (NegativeDepositAmountException e) {
+            fail("Deposit, somehow, was negative : " + randomDeposit);
+        }
+    }
+
+    @Test
+    public void testAddNegativeAmount() {
+        Double randomDeposit = randomDouble() * -1;
+        try {
+            customerAccount.add(randomDeposit);
+            fail("Deposit, somehow, was positive : " + randomDeposit);
+        } catch (NegativeDepositAmountException e) {
+            assertEquals("Deposit Amount is Negative", e.toString());
+        }
+    }
+
+    public void testBalanceMatchesWithdrawnResult() {
+        try {
+            customerAccount.add(500.0);
+            Double withdrawnResult = customerAccount.withdrawAndReportBalance(250.0, rule);
+            assertEquals(customerAccount.getBalance(), withdrawnResult);
+        } catch (NegativeDepositAmountException e) {
+            fail("Somehow, added value was negative");
+        } catch (IllegalBalanceException e) {
+            fail("Somehow, withdrawn amount was too high");
+        }
+
+    }
+
+    public void testChainDepositsAndCheckBalanceMatchWithTotal() {
+        Double total = 0.0;
+        try {
+            for (int i = 0; i < 10; i++) {
+                Double randomDeposit = randomDouble();
+                total += randomDeposit;
+                customerAccount.add(randomDeposit);
+                assertEquals(total, customerAccount.getBalance());
+            }
+
+            for (int i = 0; i < 10; i++) {
+                Double randomDeposit = randomDouble();
+                if (total * 0.2 > randomDeposit) {
+                    total -= randomDeposit;
+                    Double balance = customerAccount.withdrawAndReportBalance(randomDeposit, rule);
+                    assertEquals(total, balance);
+                }
+            }
+        } catch (NegativeDepositAmountException e) {
+            fail("Negative deposit encountered");
+        } catch (IllegalBalanceException e) {
+            fail("Withdrawn Amount was too big");
+        }
     }
 
     /**
