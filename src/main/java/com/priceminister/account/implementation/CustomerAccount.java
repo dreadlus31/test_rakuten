@@ -21,13 +21,11 @@ public class CustomerAccount implements Account {
     }
 
     public Double withdrawAndReportBalance(Double withdrawnAmount, AccountRule rule) throws IllegalBalanceException {
-        int remainingBalance = balance - toCents(withdrawnAmount);
-        Double results = toEuros(remainingBalance);
-        if (rule.withdrawPermitted(results)) {
-            balance = remainingBalance;
-            return results;
+        if (rule.withdrawPermitted(toEuros(balance), withdrawnAmount)) {
+            balance -= toCents(withdrawnAmount);
+            return this.getBalance();
         }
-        throw new IllegalBalanceException(results);
+        throw new IllegalBalanceException(toEuros(balance) - withdrawnAmount);
     }
 
     private static int toCents(Double euros) {

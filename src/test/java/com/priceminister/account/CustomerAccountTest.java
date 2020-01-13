@@ -35,7 +35,6 @@ public class CustomerAccountTest {
     public void setUp() throws Exception {
         customerAccount = new CustomerAccount();
         rule = new CustomerAccountRule();
-
     }
 
     /**
@@ -81,7 +80,6 @@ public class CustomerAccountTest {
         } catch (IllegalBalanceException e) {
             fail("Somehow, withdrawn amount was too high");
         }
-
     }
 
     public void testChainDepositsAndWithdrawalAndCheckBalanceMatchWithTotal() {
@@ -123,7 +121,6 @@ public class CustomerAccountTest {
             String message = e.toString();
             assertEquals("Illegal account balance: -" + withdrawnAmount, message);
         }
-
     }
 
     // Also implement missing unit tests for the above functionalities.
