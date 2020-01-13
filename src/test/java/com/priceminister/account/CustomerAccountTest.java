@@ -28,6 +28,11 @@ public class CustomerAccountTest {
         return Math.round(result * 100.0) / 100.0;
     }
 
+    public static Double estimateBalanceError(Double check, Double against) {
+        Double estimate = Math.abs(check - against);
+        return Math.round(estimate * 100.0) / 100.0;
+    }
+
     /**
      * @throws java.lang.Exception
      */
@@ -82,22 +87,29 @@ public class CustomerAccountTest {
         }
     }
 
+    @Test
     public void testChainDepositsAndWithdrawalAndCheckBalanceMatchWithTotal() {
         Double total = 0.0;
         try {
             for (int i = 0; i < 10; i++) {
-                Double randomDeposit = randomDouble();
+                Double randomDeposit = Math.abs(randomDouble());
                 total += randomDeposit;
                 customerAccount.add(randomDeposit);
-                assertEquals(total, customerAccount.getBalance());
+                Double balance = customerAccount.getBalance();
+                Double estimate = estimateBalanceError(total, balance);
+                System.out.println("[MAVEN TEST - CHAIN DEPOSIT] => " + total + " vs. " + balance + " => " + estimate);
+                assertTrue(estimate <= 0.01);
             }
 
             for (int i = 0; i < 10; i++) {
-                Double randomDeposit = randomDouble();
+                Double randomDeposit = Math.abs(randomDouble());
                 if (total * 0.2 > randomDeposit) {
                     total -= randomDeposit;
                     Double balance = customerAccount.withdrawAndReportBalance(randomDeposit, rule);
-                    assertEquals(total, balance);
+                    Double estimate = estimateBalanceError(total, balance);
+                    System.out.println(
+                            "[MAVEN TEST - CHAIN WITHDRAW] => " + total + " vs. " + balance + " => " + estimate);
+                    assertTrue(estimate <= 0.01);
                 }
             }
         } catch (NegativeDepositAmountException e) {
