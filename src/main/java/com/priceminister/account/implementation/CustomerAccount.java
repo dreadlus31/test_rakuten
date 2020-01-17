@@ -7,7 +7,7 @@ public class CustomerAccount implements Account {
     /**
      * @param balance stored as cents of Euros. Expressed as Euros.
      */
-    private int balance = 0;
+    private long balance = 0;
 
     public void add(Double addedAmount) throws NegativeDepositAmountException {
         if (addedAmount < 0) {
@@ -28,11 +28,11 @@ public class CustomerAccount implements Account {
         throw new IllegalBalanceException(toEuros(balance) - withdrawnAmount);
     }
 
-    private static int toCents(Double euros) {
+    private static long toCents(Double euros) {
         return new Double(euros * 100).intValue();
     }
 
-    private static Double toEuros(int cents) {
+    private static Double toEuros(long cents) {
         return (new Double(cents)) / 100;
     }
 

@@ -91,7 +91,6 @@ public class CustomerAccountTest {
     public void testChainDepositsAndWithdrawalAndCheckBalanceMatchWithTotal() {
         Double total = 0.0, balance, randomAmount, estimate = 0.0;
         int numberOfChainedOperation = 100000;
-        String log = "";
         try {
             balance = customerAccount.getBalance();
             for (int i = 0; i < numberOfChainedOperation; i++) {
@@ -102,8 +101,6 @@ public class CustomerAccountTest {
                     customerAccount.add(randomAmount);
                     balance = customerAccount.getBalance();
                     estimate = estimateCumulatedBalanceError(total, balance);
-                    log = "[MAVEN TEST - CHAIN DEPOSIT] => n°" + i + " : " + total + " vs. " + balance + " => "
-                            + estimate;
 
                 } else {
                     if (total * 0.2 <= randomAmount) {
@@ -113,11 +110,6 @@ public class CustomerAccountTest {
                     total -= randomAmount;
                     balance = customerAccount.withdrawAndReportBalance(randomAmount, rule);
                     estimate = estimateCumulatedBalanceError(total, balance);
-                    log = "[MAVEN TEST - CHAIN WITHDRAW] => n°" + i + " : " + total + " vs. " + balance + " => "
-                            + estimate;
-                }
-                if (false) {
-                    System.out.println(log);
                 }
 
             }
