@@ -25,12 +25,12 @@ public class CustomerAccountTest {
 
     public static Double randomDouble() {
         Double result = (Math.random() * 100) * (Math.random() * 100);
-        return Math.round(result * 1000.0) / 1000.0;
+        return Math.round(result * 100.0) / 100.0;
     }
 
     public static Double estimateCumulatedBalanceError(Double check, Double against) {
         Double estimate = Math.abs(check - against);
-        return Math.round(estimate * 1000.0) / 1000.0;
+        return Math.round(estimate * 100.0) / 100.0;
     }
 
     /**
@@ -114,7 +114,6 @@ public class CustomerAccountTest {
 
             }
             estimate /= numberOfChainedOperation;
-            System.out.println(estimate + " % " + 0.01);
             assertTrue(estimate <= 0.01);
 
         } catch (NegativeDepositAmountException e) {
