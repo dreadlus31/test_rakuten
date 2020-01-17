@@ -8,7 +8,7 @@ public interface Account {
 
     /**
      * Adds money to this account.
-     * 
+     *
      * @param addedAmount - the money to add
      * @throws NegativeDepositAmountException
      */
@@ -16,7 +16,7 @@ public interface Account {
 
     /**
      * Withdraws money from the account.
-     * 
+     *
      * @param withdrawnAmount - the money to withdraw
      * @param rule            - the AccountRule that defines which balance is
      *                        allowed for this account
@@ -28,7 +28,7 @@ public interface Account {
 
     /**
      * Gets the current account balance.
-     * 
+     *
      * @return the account's balance
      */
     public Double getBalance();

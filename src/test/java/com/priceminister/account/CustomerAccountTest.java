@@ -25,12 +25,12 @@ public class CustomerAccountTest {
 
     public static Double randomDouble() {
         Double result = (Math.random() * 100) * (Math.random() * 100);
-        return Math.round(result * 100.0) / 100.0;
+        return Math.round(result * 1000.0) / 1000.0;
     }
 
-    public static Double estimateBalanceError(Double check, Double against) {
+    public static Double estimateCumulatedBalanceError(Double check, Double against) {
         Double estimate = Math.abs(check - against);
-        return Math.round(estimate * 100.0) / 100.0;
+        return Math.round(estimate * 1000.0) / 1000.0;
     }
 
     /**
@@ -89,29 +89,42 @@ public class CustomerAccountTest {
 
     @Test
     public void testChainDepositsAndWithdrawalAndCheckBalanceMatchWithTotal() {
-        Double total = 0.0;
+        Double total = 0.0, balance, randomAmount, estimate = 0.0;
+        int numberOfChainedOperation = 100000;
+        String log = "";
         try {
-            for (int i = 0; i < 10; i++) {
-                Double randomDeposit = Math.abs(randomDouble());
-                total += randomDeposit;
-                customerAccount.add(randomDeposit);
-                Double balance = customerAccount.getBalance();
-                Double estimate = estimateBalanceError(total, balance);
-                System.out.println("[MAVEN TEST - CHAIN DEPOSIT] => " + total + " vs. " + balance + " => " + estimate);
-                assertTrue(estimate <= 0.01);
-            }
+            balance = customerAccount.getBalance();
+            for (int i = 0; i < numberOfChainedOperation; i++) {
+                randomAmount = Math.abs(randomDouble());
 
-            for (int i = 0; i < 10; i++) {
-                Double randomDeposit = Math.abs(randomDouble());
-                if (total * 0.2 > randomDeposit) {
-                    total -= randomDeposit;
-                    Double balance = customerAccount.withdrawAndReportBalance(randomDeposit, rule);
-                    Double estimate = estimateBalanceError(total, balance);
-                    System.out.println(
-                            "[MAVEN TEST - CHAIN WITHDRAW] => " + total + " vs. " + balance + " => " + estimate);
-                    assertTrue(estimate <= 0.01);
+                if (Math.random() > 0.5) {
+                    total += randomAmount;
+                    customerAccount.add(randomAmount);
+                    balance = customerAccount.getBalance();
+                    estimate = estimateCumulatedBalanceError(total, balance);
+                    log = "[MAVEN TEST - CHAIN DEPOSIT] => n°" + i + " : " + total + " vs. " + balance + " => "
+                            + estimate;
+
+                } else {
+                    if (total * 0.2 <= randomAmount) {
+                        i--;
+                        continue;
+                    }
+                    total -= randomAmount;
+                    balance = customerAccount.withdrawAndReportBalance(randomAmount, rule);
+                    estimate = estimateCumulatedBalanceError(total, balance);
+                    log = "[MAVEN TEST - CHAIN WITHDRAW] => n°" + i + " : " + total + " vs. " + balance + " => "
+                            + estimate;
                 }
+                if (false) {
+                    System.out.println(log);
+                }
+
             }
+            estimate /= numberOfChainedOperation;
+            System.out.println(estimate + " % " + 0.01);
+            assertTrue(estimate <= 0.01);
+
         } catch (NegativeDepositAmountException e) {
             fail("Negative deposit encountered");
         } catch (IllegalBalanceException e) {
